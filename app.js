@@ -2526,14 +2526,17 @@ console.log('✅ Tab handlers setup complete');
 document.addEventListener('DOMContentLoaded', function() {
     const currentPage = window.location.pathname.toLowerCase();
     
-    // Proteksi halaman yang memerlukan login
-    if (currentPage.includes('index.html') || currentPage.includes('kelola-ajsquare.html') || currentPage.includes('kelola-atmacanteen.html') || currentPage === '/') {
+    // Proteksi halaman yang memerlukan login (bukan halaman login itu sendiri)
+    const isLoginPage = currentPage === '/' || currentPage.endsWith('/index.html') && !currentPage.includes('/dashboard') && !currentPage.includes('/kelola') && !currentPage.includes('/event');
+    const isProtectedPage = currentPage.includes('/dashboard') || currentPage.includes('/kelola-ajsquare') || currentPage.includes('/kelola-atmacanteen') || currentPage.includes('/event-nonav-ajmn');
+    
+    if (isProtectedPage) {
         protectPage().then(isAuthenticated => {
             if (isAuthenticated) {
                 toggleAuthElements();
                 
                 // Load tenant data khusus untuk halaman kelola
-                if (currentPage.includes('kelola-ajsquare.html') || currentPage.includes('kelola-atmacanteen.html')) {
+                if (currentPage.includes('/kelola-ajsquare') || currentPage.includes('/kelola-atmacanteen')) {
                     console.log('📄 Halaman kelola detected, loading tenant data...');
                     loadTenantList();
                     
@@ -2566,7 +2569,7 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleAuthElements();
             
             // Load tenant data jika di halaman kelola setelah login
-            if (window.location.pathname.toLowerCase().includes('kelola-ajsquare.html') || window.location.pathname.toLowerCase().includes('kelola-atmacanteen.html')) {
+            if (window.location.pathname.toLowerCase().includes('/kelola-ajsquare') || window.location.pathname.toLowerCase().includes('/kelola-atmacanteen')) {
                 setTimeout(() => loadTenantList(), 100);
             }
         }
