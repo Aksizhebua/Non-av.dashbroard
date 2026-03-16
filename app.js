@@ -271,7 +271,7 @@ async function logoutAdmin() {
         alert("Anda telah logout. Sampai jumpa!");
         
         // Redirect ke halaman login
-        window.location.href = 'login.html';
+        window.location.href='/';
         return true;
     } catch (error) {
         console.error("Error logout:", error);
@@ -287,7 +287,7 @@ async function protectPage() {
         if (!session) {
             console.log("Akses ditolak! User belum login.");
             alert("Anda harus login dahulu untuk mengakses halaman ini.");
-            window.location.href = 'login.html';
+            window.location.href='/';
             return false;
         }
         
@@ -295,7 +295,7 @@ async function protectPage() {
         return true;
     } catch (error) {
         console.error("Error checking session:", error);
-        window.location.href = 'login.html';
+        window.location.href='/';
         return false;
     }
 }
@@ -2562,7 +2562,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Auth state changed:', event, session);
         
         if (event === 'SIGNED_OUT') {
-            window.location.href = 'login.html';
+            window.location.href='/';
         } else if (event === 'SIGNED_IN') {
             toggleAuthElements();
             
