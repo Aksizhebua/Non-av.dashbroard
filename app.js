@@ -286,7 +286,6 @@ async function protectPage() {
         
         if (!session) {
             console.log("Akses ditolak! User belum login.");
-            alert("Anda harus login dahulu untuk mengakses halaman ini.");
             window.location.href='/';
             return false;
         }
