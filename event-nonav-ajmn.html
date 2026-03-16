@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+            <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+        <script src="booking-event-dropdown.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EVENT Non-AV AJMN</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="icon" href="images/favicon.png" type="image/png">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <style>
+        body { background: linear-gradient(135deg, #fff8f3 0%, #ffeee6 50%, #ffe8d6 100%); min-height: 100vh; }
+        .header-section { background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 25%, #ffa726 50%, #ffb74d 100%); color: white; border-bottom-left-radius: 2rem; border-bottom-right-radius: 2rem; box-shadow: 0 10px 30px rgba(255, 107, 53, 0.15); padding: 2.5rem 0 2rem 0; margin-bottom: 2rem; }
+        .menu-card { border-radius: 1.5rem; box-shadow: 0 4px 18px rgba(255, 140, 66, 0.08); border: none; transition: all 0.3s; }
+        .menu-card:hover { transform: translateY(-6px) scale(1.03); box-shadow: 0 10px 32px rgba(255, 140, 66, 0.18); }
+        .menu-icon { font-size: 2.5rem; color: #ff8c42; margin-bottom: 0.7rem; }
+        .menu-title { font-weight: bold; color: #ff6b35; }
+        .halaman-konten { display: none; }
+        .halaman-konten.aktif { display: block; }
+    </style>
+</head>
+<body>
+    <div class="header-section text-center mb-4">
+        <div class="d-flex justify-content-between align-items-center px-4" style="margin-bottom: 0.5rem;">
+            <a href="index.html" class="btn btn-light btn-sm px-3 py-1" style="border-radius: 1.2rem; font-weight: 500; color: #ff6b35; background: #fff3e0; box-shadow: 0 2px 8px rgba(255,140,66,0.08);">
+                <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
+            </a>
+            <span class="fw-semibold" style="font-size: 1rem; color: #fffbe7;">
+                <i class="bi bi-person-circle me-1"></i>Selamat datang, Admin!
+            </span>
+        </div>
+        <div class="d-flex justify-content-center align-items-center gap-3 mb-1">
+            <img src="images/Aksizebua.png" alt="Logo AJMN" height="70" style="filter: drop-shadow(0 3px 8px rgba(0,0,0,0.18));">
+            <div class="text-start">
+                <h1 class="fw-bold mb-0" style="font-size:2.8rem; letter-spacing:1px; line-height:1.1;">EVENT Non-AV AJMN</h1>
+                <div style="font-size:1.15rem; opacity:0.96; font-weight:400;">Sistem Manajemen Event, Booking, Pembayaran & Monitoring</div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="d-flex justify-content-center mb-4">
+            <div class="event-nav rounded-pill shadow-sm d-flex" style="background: #fff; padding: 0.3rem 0.5rem; gap: 0.5rem; box-shadow: 0 4px 18px rgba(255, 140, 66, 0.10);">
+                <a href="#" class="event-nav-btn active" id="btn-booking" onclick="bukaHalaman('booking'); return false;">
+                    <i class="bi bi-calendar2-plus me-2"></i>Booking Event
+                </a>
+                        
+                <a href="#" class="event-nav-btn" id="btn-pembayaran" onclick="bukaHalaman('pembayaran'); return false;">
+                    <i class="bi bi-cash-coin me-2"></i>Pembayaran Event
+                </a>
+                <a href="#" class="event-nav-btn" id="btn-kalender" onclick="bukaHalaman('kalender'); return false;">
+                    <i class="bi bi-calendar3 me-2"></i>Kalender Event
+                </a>
+                <a href="#" class="event-nav-btn" id="btn-monitoring-event" onclick="bukaHalaman('monitoring-event'); return false;">
+                    <i class="bi bi-table me-2"></i>Monitoring Event
+                </a>
+                <a href="#" class="event-nav-btn" id="btn-monitoring" onclick="bukaHalaman('monitoring'); return false;">
+                    <i class="bi bi-bar-chart-line me-2"></i>Monitoring Pembayaran
+                </a>
+            </div>
+        </div>
+        <style>
+        .event-nav {
+            min-width: 350px;
+            background: #fff;
+            border-radius: 2.5rem;
+            box-shadow: 0 4px 18px rgba(255, 140, 66, 0.10);
+        }
+        .event-nav-btn {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            color: #ff8c42;
+            background: transparent;
+            border: none;
+            border-radius: 2.5rem;
+            padding: 0.7rem 1.7rem;
+            font-size: 1.15rem;
+            transition: all 0.18s;
+            text-decoration: none;
+        }
+        .event-nav-btn.active, .event-nav-btn:hover {
+            background: linear-gradient(90deg,#ff8c42,#ffb74d);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(255,140,66,0.10);
+        }
+        .event-nav-btn i {
+            font-size: 1.25rem;
+        }
+        </style>
+    </div>
+    <div id="halaman-booking" class="halaman-konten aktif">
+        <section class="my-5">
+            <div class="container">
+                <div class="card shadow-lg mx-auto" style="max-width: 750px; border-radius: 1.7rem; background: #fffaf7; border: none;">
+                    <div class="card-body p-4 p-md-5">
+
+                        <!-- Header -->
+                        <div class="text-center mb-4 pb-3 border-bottom">
+                            <h4 class="fw-bold mb-1" style="color:#ff6b35; letter-spacing:0.5px;">
+                                <i class="bi bi-calendar2-plus me-2"></i>Tambah Booking Event Baru
+                            </h4>
+                            <small class="text-muted">Isi semua field bertanda * untuk melanjutkan</small>
+                        </div>
+
+                        <form id="form-booking-event" autocomplete="off">
+
+                            <!-- SECTION: Informasi Event & Status -->
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <span class="me-2" style="color:#ff8c42;font-size:1.1rem;">📋</span>
+                                    <span class="fw-bold" style="color:#ff6b35; font-size:0.95rem; letter-spacing:0.5px;">INFORMASI EVENT & STATUS</span>
+                                    <hr class="flex-grow-1 ms-3 my-0" style="border-color:#ffe0b2;">
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold" style="color:#b05a00;">ID Booking <span class="text-danger">*</span> <small class="text-muted fw-normal">(Terisi Otomatis)</small></label>
+                                        <div class="input-group">
+                                            <input type="text" name="id_booking" id="id_booking_input" class="form-control soft-input" placeholder="Generating..." readonly style="background:#fff7f0;color:#b05a00;font-family:monospace;">
+                                            <span class="input-group-text" style="background:#fff3e0;border:1.5px solid #ffe0b2;border-left:none;color:#ff8c42;" title="Auto-generated"><i class="bi bi-lock-fill"></i></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold" style="color:#b05a00;">Nama Event <span class="text-danger">*</span></label>
+                                        <input type="text" name="nama_event" class="form-control soft-input" required placeholder="Ketik nama acara... (cth: Raker Tahunan PT ABC)">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold" style="color:#b05a00;">Jenis Event <span class="text-danger">*</span></label>
+                                        <select name="jenis_event" id="jenis_event_dropdown" class="form-control soft-input" required>
+                                            <option value="">Pilih Jenis Event</option>
+                                            <option>Wedding</option>
+                                            <option>Corporate</option>
+                                            <option>Seminar</option>
+                                            <option>Komunitas</option>
+                                            <option>Lainnya</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold" style="color:#b05a00;">Status Alur <span class="text-danger">*</span></label>
+                                        <select name="status_alur" class="form-control soft-input" required>
+                                            <option value="">Pilih Status</option>
+                                            <option>Surveying</option>
+                                            <option>Booking Form</option>
+                                            <option>Soft Booked</option>
+                                            <option>Contract Sent</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SECTION: Jadwal -->
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <span class="me-2" style="color:#ff8c42;font-size:1.1rem;">📅</span>
+                                    <span class="fw-bold" style="color:#ff6b35; font-size:0.95rem; letter-spacing:0.5px;">JADWAL PELAKSANAAN</span>
+                                    <hr class="flex-grow-1 ms-3 my-0" style="border-color:#ffe0b2;">
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold" style="color:#b05a00;">Tanggal Event <span class="text-danger">*</span></label>
+                                        <input type="date" name="tanggal_event" class="form-control soft-input" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold" style="color:#b05a00;">Jam Mulai <span class="text-danger">*</span></label>
+                                        <input type="time" name="jam_mulai" class="form-control soft-input" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold" style="color:#b05a00;">Jam Selesai <span class="text-danger">*</span></label>
+                                        <input type="time" name="jam_selesai" class="form-control soft-input" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SECTION: Data Klien -->
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <span class="me-2" style="color:#ff8c42;font-size:1.1rem;">👤</span>
+                                    <span class="fw-bold" style="color:#ff6b35; font-size:0.95rem; letter-spacing:0.5px;">DATA KLIEN (PIC PENYEWA)</span>
+                                    <hr class="flex-grow-1 ms-3 my-0" style="border-color:#ffe0b2;">
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold" style="color:#b05a00;">Nama PIC Penyewa <span class="text-danger">*</span></label>
+                                        <input type="text" name="pic_penyewa" class="form-control soft-input" required placeholder="Ketik nama penanggung jawab...">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold" style="color:#b05a00;">No. Handphone / WhatsApp <span class="text-danger">*</span></label>
+                                        <input type="text" name="no_hp_pic" class="form-control soft-input" required placeholder="08...">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SECTION: Administrasi -->
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <span class="me-2" style="color:#ff8c42;font-size:1.1rem;">📁</span>
+                                    <span class="fw-bold" style="color:#ff6b35; font-size:0.95rem; letter-spacing:0.5px;">ADMINISTRASI & KONTRAK</span>
+                                    <hr class="flex-grow-1 ms-3 my-0" style="border-color:#ffe0b2;">
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold" style="color:#b05a00;">Total Nilai Kontrak <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text" style="background:#fff3e0;border:1.5px solid #ffe0b2;border-right:none;color:#ff8c42;font-weight:700;">Rp</span>
+                                            <input type="number" name="total_nilai_kontrak" class="form-control soft-input" placeholder="0" style="border-left:none;" min="0" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold" style="color:#b05a00;">Upload Dokumen PKS (PDF)</label>
+                                        <label for="dokumen_pks_file" class="d-block w-100 text-center p-4 rounded" id="pks-dropzone" style="border:2px dashed #ffb74d;border-radius:1rem!important;cursor:pointer;background:#fff9f5;transition:all 0.2s;">
+                                            <i class="bi bi-cloud-arrow-up" style="font-size:2rem;color:#ff8c42;"></i>
+                                            <div class="mt-2" style="color:#b05a00;font-weight:600;">Klik untuk Upload File PDF</div>
+                                            <small class="text-muted" id="pks-filename">Belum ada file dipilih</small>
+                                        </label>
+                                        <input type="file" id="dokumen_pks_file" accept=".pdf" class="d-none" onchange="tampilNamaFilePKS(this)">
+                                        <input type="hidden" name="dokumen_pks" id="dokumen_pks_hidden">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="d-flex gap-3 mt-4">
+                                <button type="button" class="btn flex-fill" style="border:2px solid #ff8c42;color:#ff8c42;font-weight:700;border-radius:1.2rem;" onclick="resetFormBooking()">
+                                    <i class="bi bi-x-circle me-2"></i>Batal
+                                </button>
+                                <button type="submit" class="btn flex-fill" style="background:linear-gradient(90deg,#ff8c42,#ffb74d);border:none;font-weight:700;color:#fff;font-size:1.05rem;border-radius:1.2rem;box-shadow:0 2px 8px rgba(255,140,66,0.15);">
+                                    <i class="bi bi-save me-2"></i>Simpan Booking
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="halaman-pembayaran" class="halaman-konten">
+        <section class="my-5">
+            <div class="container">
+                <div class="card shadow-lg mx-auto" style="max-width:640px; border-radius:1.7rem; background:#fffaf7; border:none;">
+                    <div class="card-body p-4">
+                        <h4 class="mb-1 text-center fw-bold" style="color:#ff6b35; letter-spacing:0.5px;">
+                            <i class="bi bi-cash-coin me-2"></i>Input Pembayaran Event
+                        </h4>
+                        <p class="text-center text-muted small mb-4">Catat pembayaran dari klien untuk event yang sudah dibooking</p>
+
+                        <form id="form-pembayaran-event" autocomplete="off" onsubmit="submitPembayaran(event)">
+
+                            <!-- INFORMASI TRANSAKSI -->
+                            <div class="section-label mb-3" style="font-size:0.78rem;font-weight:700;letter-spacing:1.5px;color:#ff8c42;text-transform:uppercase;border-bottom:2px solid #ffe0b2;padding-bottom:4px;">
+                                <i class="bi bi-receipt me-1"></i> Informasi Transaksi
+                            </div>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-12">
+                                    <label class="form-label small text-secondary">ID Transaksi <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input type="text" id="input-id-trans" name="id_trans" class="form-control soft-input" readonly required>
+                                        <span class="input-group-text" style="background:#fff3e0;border:1.5px solid #ffe0b2;border-left:none;border-radius:0 1.1rem 1.1rem 0;color:#ff8c42;">
+                                            <i class="bi bi-lock-fill"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small text-secondary">Referensi Booking <span class="text-danger">*</span></label>
+                                    <div class="position-relative" id="ref-booking-wrapper">
+                                        <div class="input-group">
+                                            <span class="input-group-text" style="background:#fff3e0;border:1.5px solid #ffe0b2;border-right:none;border-radius:1.1rem 0 0 1.1rem;color:#ff8c42;">
+                                                <i class="bi bi-search"></i>
+                                            </span>
+                                            <input type="text" id="input-ref-booking-search" class="form-control soft-input" style="border-left:none;border-radius:0 1.1rem 1.1rem 0;"
+                                                placeholder="Ketik ID atau nama event..." autocomplete="off"
+                                                oninput="filterRefBookingDropdown(this.value)"
+                                                onfocus="showRefBookingDropdown()"
+                                                required>
+                                        </div>
+                                        <input type="hidden" id="input-ref-booking-value" name="ref_booking" required>
+                                        <!-- Dropdown list -->
+                                        <div id="ref-booking-list" class="d-none position-absolute w-100 shadow rounded-3"
+                                            style="z-index:1000;background:#fff;border:1.5px solid #ffe0b2;max-height:220px;overflow-y:auto;top:calc(100% + 4px);">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small text-secondary">Tahap Pembayaran <span class="text-danger">*</span></label>
+                                    <select name="tahap" class="form-select soft-input" required>
+                                        <option value="">Pilih Tahap Pembayaran</option>
+                                        <option value="Booking Fee 10%">Booking Fee 10%</option>
+                                        <option value="DP 50%">DP 50%</option>
+                                        <option value="Pelunasan">Pelunasan</option>
+                                        <option value="Security Deposit">Security Deposit</option>
+                                        <option value="Refund">Refund</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- DETAIL PEMBAYARAN -->
+                            <div class="section-label mb-3" style="font-size:0.78rem;font-weight:700;letter-spacing:1.5px;color:#ff8c42;text-transform:uppercase;border-bottom:2px solid #ffe0b2;padding-bottom:4px;">
+                                <i class="bi bi-cash me-1"></i> Detail Pembayaran
+                            </div>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label small text-secondary">Tanggal Bayar <span class="text-danger">*</span></label>
+                                    <input type="date" name="tanggal_bayar" class="form-control soft-input" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small text-secondary">Nominal Pembayaran <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" style="background:#fff3e0;border:1.5px solid #ffe0b2;border-right:none;border-radius:1.1rem 0 0 1.1rem;color:#b05a00;font-weight:700;">Rp</span>
+                                        <input type="number" name="nominal" class="form-control soft-input" style="border-left:none;border-radius:0 1.1rem 1.1rem 0;" min="0" required placeholder="0">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- LAMPIRAN -->
+                            <div class="section-label mb-3" style="font-size:0.78rem;font-weight:700;letter-spacing:1.5px;color:#ff8c42;text-transform:uppercase;border-bottom:2px solid #ffe0b2;padding-bottom:4px;">
+                                <i class="bi bi-paperclip me-1"></i> Lampiran
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label small text-secondary">Upload Bukti Transfer <small class="text-muted">(JPG/PNG/PDF — opsional)</small></label>
+                                <div class="dropzone-area" id="dropzone-bukti" onclick="document.getElementById('file-bukti').click()"
+                                    style="border:2px dashed #ffb74d;border-radius:1.2rem;padding:1.8rem;text-align:center;cursor:pointer;background:#fffaf7;transition:border 0.2s;">
+                                    <i class="bi bi-cloud-arrow-up" style="font-size:2rem;color:#ff8c42;"></i>
+                                    <div class="mt-1 fw-semibold" style="color:#ff8c42;">Klik untuk Upload Bukti Bayar</div>
+                                    <div id="nama-file-bukti" class="small text-muted mt-1">JPG, PNG, atau PDF</div>
+                                </div>
+                                <input type="file" id="file-bukti" accept=".jpg,.jpeg,.png,.pdf" class="d-none" onchange="tampilNamaFileBukti(this)">
+                            </div>
+
+                            <!-- Tombol -->
+                            <div class="d-flex gap-3">
+                                <button type="button" class="btn btn-outline-secondary flex-fill rounded-pill" onclick="resetFormPembayaran()">
+                                    <i class="bi bi-x-circle me-2"></i>Batal
+                                </button>
+                                <button type="submit" id="btn-simpan-pembayaran" class="btn flex-fill rounded-pill fw-bold"
+                                    style="background:linear-gradient(90deg,#ff8c42,#ffb74d);border:none;color:#fff;box-shadow:0 2px 8px rgba(255,140,66,0.2);">
+                                    <i class="bi bi-save me-2"></i>Simpan Pembayaran
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="halaman-kalender" class="halaman-konten">
+        <section class="my-5">
+            <div class="container">
+                <div class="card p-4" style="border-radius:2rem; background: linear-gradient(145deg,#fff,#fffaf7); box-shadow: 0 8px 25px rgba(255,107,53,0.10); border: 1px solid rgba(255,165,0,0.1);">
+                    <div class="card-body">
+                        <!-- Header kalender -->
+                        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                            <h4 class="card-title fw-bold mb-0" style="color:#ff6b35;"><i class="bi bi-calendar3 me-2"></i>Kalender Event</h4>
+                            <button class="btn btn-sm rounded-pill fw-bold px-4" style="background:linear-gradient(135deg,#ff6b35,#ffb74d);color:#fff;border:none;box-shadow:0 4px 15px rgba(255,107,53,0.3);" onclick="loadKalenderEvent()">
+                                <i class="bi bi-arrow-clockwise me-2"></i>Refresh
+                            </button>
+                        </div>
+                        <!-- Navigasi bulan -->
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <button class="btn btn-sm rounded-pill px-3" style="border:1.5px solid #ff8c42;color:#ff8c42;" onclick="navigasiKalender(-1)">
+                                <i class="bi bi-chevron-left"></i>
+                            </button>
+                            <div class="position-relative">
+                                <button class="btn fw-bold px-3 py-1" id="kalender-judul-bulan" style="color:#ff6b35;font-size:1.1rem;background:transparent;border:none;" onclick="togglePickerKalender()">
+                                    &nbsp;<i class="bi bi-chevron-down ms-1" style="font-size:0.8rem;"></i>
+                                </button>
+                                <div id="kalender-picker" class="d-none position-absolute shadow-lg rounded p-3" style="z-index:999;background:#fff;border:1.5px solid #ffe0b2;min-width:220px;left:50%;transform:translateX(-50%);top:110%;">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span id="picker-tahun" class="fw-bold" style="color:#ff6b35;font-size:1rem;"></span>
+                                        <div class="d-flex gap-1">
+                                            <button class="btn btn-sm p-0 px-2" style="color:#ff8c42;" onclick="navigasiPickerTahun(-1)"><i class="bi bi-arrow-up"></i></button>
+                                            <button class="btn btn-sm p-0 px-2" style="color:#ff8c42;" onclick="navigasiPickerTahun(1)"><i class="bi bi-arrow-down"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="row g-1" id="picker-bulan-grid"></div>
+                                </div>
+                            </div>
+                            <button class="btn btn-sm rounded-pill px-3" style="border:1.5px solid #ff8c42;color:#ff8c42;" onclick="navigasiKalender(1)">
+                                <i class="bi bi-chevron-right"></i>
+                            </button>
+                        </div>
+                        <!-- Grid kalender -->
+                        <div id="kalender-grid-wrapper">
+                            <div class="row g-0 mb-1">
+                                <div class="col text-center fw-bold py-2" style="color:#ff8c42;">Min</div>
+                                <div class="col text-center fw-bold py-2" style="color:#ff8c42;">Sen</div>
+                                <div class="col text-center fw-bold py-2" style="color:#ff8c42;">Sel</div>
+                                <div class="col text-center fw-bold py-2" style="color:#ff8c42;">Rab</div>
+                                <div class="col text-center fw-bold py-2" style="color:#ff8c42;">Kam</div>
+                                <div class="col text-center fw-bold py-2" style="color:#ff8c42;">Jum</div>
+                                <div class="col text-center fw-bold py-2" style="color:#ff8c42;">Sab</div>
+                            </div>
+                            <div id="kalender-grid" class="row g-1"></div>
+                        </div>
+                        <!-- Loading -->
+                        <div id="kalender-loading" class="text-center py-5 d-none">
+                            <div class="spinner-border text-warning"></div>
+                            <div class="mt-2" style="color:#ff8c42;">Memuat data kalender...</div>
+                        </div>
+                        <!-- Legend -->
+                        <div class="d-flex gap-3 mt-4 flex-wrap">
+                            <span><span class="badge" style="background:#ff8c42;">&nbsp;&nbsp;</span> Ada Event</span>
+                            <span><span class="badge bg-light border">&nbsp;&nbsp;</span> Tidak Ada Event</span>
+                            <span><span class="badge bg-warning text-dark">&nbsp;&nbsp;</span> Hari Ini</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Detail event pada hari tertentu -->
+                <div id="kalender-event-list" class="mt-4 d-none">
+                    <div class="card p-4" style="border-radius:1.5rem;border:2px solid #ffe0b2;background:#fffaf7;">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold mb-0" style="color:#ff6b35;"><i class="bi bi-list-ul me-2"></i>Event pada <span id="kalender-tgl-terpilih"></span></h6>
+                            <button class="btn btn-sm" style="color:#ff8c42;" onclick="document.getElementById('kalender-event-list').classList.add('d-none')"><i class="bi bi-x-lg"></i></button>
+                        </div>
+                        <div id="kalender-event-items"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Halaman Monitoring Event -->
+    <div id="halaman-monitoring-event" class="halaman-konten">
+        <section class="my-5">
+            <div class="container">
+                <div class="card p-4" style="border-radius:2rem; background: linear-gradient(145deg,#fff,#fffaf7); box-shadow: 0 8px 25px rgba(255,107,53,0.10); border: 1px solid rgba(255,165,0,0.1);">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                            <h4 class="card-title fw-bold mb-0" style="color:#ff6b35;"><i class="bi bi-table me-2"></i>Monitoring Event</h4>
+                            <button class="btn btn-sm rounded-pill fw-bold px-4" style="background:linear-gradient(135deg,#ff6b35,#ffb74d);color:#fff;border:none;box-shadow:0 4px 15px rgba(255,107,53,0.3);" onclick="loadMonitoringBooking()">
+                                <i class="bi bi-arrow-clockwise me-2"></i>Refresh Data
+                            </button>
+                        </div>
+                        <!-- Filter -->
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold"><i class="bi bi-funnel-fill me-2" style="color:#ff8c42;"></i>Filter Status Alur</label>
+                                <select id="filterStatusMonitoring" class="form-select" onchange="filterMonitoringBooking()" style="border-radius:1rem;border:1.5px solid #ffe0b2;">
+                                    <option value="">Semua Status Alur</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold"><i class="bi bi-person-fill me-2" style="color:#ff8c42;"></i>Filter PIC</label>
+                                <select id="filterPicMonitoring" class="form-select" onchange="filterMonitoringBooking()" style="border-radius:1rem;border:1.5px solid #ffe0b2;">
+                                    <option value="">Semua PIC</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button class="btn btn-sm" style="color:#ff8c42;border:1.5px solid #ff8c42;border-radius:1rem;" onclick="clearFilterMonitoring()">
+                                    <i class="bi bi-x-circle me-1"></i>Clear Filter
+                                </button>
+                            </div>
+                        </div>
+                        <div class="table-responsive" style="max-height:520px;overflow-y:auto;border-radius:1rem;">
+                            <table class="table table-hover align-middle">
+                                <thead style="background:linear-gradient(135deg,#ff8c42,#ffa726);color:#fff;position:sticky;top:0;">
+                                    <tr>
+                                        <th><i class="bi bi-calendar-event me-1"></i>Nama Event</th>
+                                        <th><i class="bi bi-tag me-1"></i>Jenis Event</th>
+                                        <th><i class="bi bi-calendar3 me-1"></i>Tanggal Event</th>
+                                        <th><i class="bi bi-person me-1"></i>PIC</th>
+                                        <th><i class="bi bi-telephone me-1"></i>No. HP</th>
+                                        <th><i class="bi bi-layers me-1"></i>Status Alur</th>
+                                        <th><i class="bi bi-gear me-1"></i>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody_monitoring_booking">
+                    <tr><td colspan="7" class="text-center py-5">
+                                        <i class="bi bi-inbox" style="font-size:3rem;color:#ffa726;opacity:0.6;"></i>
+                                        <div class="mt-2" style="color:#ff8c42;font-weight:500;">Belum ada data</div>
+                                        <small style="color:#ffa726;">Klik Refresh Data untuk memuat</small>
+                                    </td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="halaman-monitoring" class="halaman-konten">
+        <section class="my-5">
+            <div class="container">
+                <div class="card p-4" style="border-radius:2rem; background: linear-gradient(145deg,#fff,#fffaf7); box-shadow: 0 8px 25px rgba(255,107,53,0.10); border: 1px solid rgba(255,165,0,0.1);">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                            <h4 class="card-title fw-bold mb-0" style="color:#ff6b35;"><i class="bi bi-bar-chart me-2"></i>Riwayat & Progres Pembayaran Event</h4>
+                            <button class="btn btn-sm rounded-pill fw-bold px-4" style="background:linear-gradient(135deg,#ff6b35,#ffb74d);color:#fff;border:none;box-shadow:0 4px 15px rgba(255,107,53,0.3);" onclick="loadDataPembayaran()">
+                                <i class="bi bi-arrow-clockwise me-2"></i>Refresh Data
+                            </button>
+                        </div>
+
+                        <!-- Filter -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="filterTahap" class="form-label fw-bold"><i class="bi bi-funnel-fill me-2" style="color:#ff8c42;"></i>Filter Tahap</label>
+                                <select id="filterTahap" class="form-select" onchange="filterPembayaran()" style="border-radius:1rem; border:1.5px solid #ffe0b2;">
+                                    <option value="">Semua Tahap</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-end">
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm" style="color:#ff8c42;border:1.5px solid #ff8c42;border-radius:1rem;" onclick="clearFilterPembayaran()">
+                                        <i class="bi bi-x-circle me-1"></i>Clear Filter
+                                    </button>
+                                    <span id="filterInfoPembayaran" class="badge fw-normal px-3 py-2 d-none" style="background:linear-gradient(45deg,#ff8c42,#ffa726);">
+                                        <i class="bi bi-info-circle me-1"></i>Data difilter
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive" style="max-height:500px;overflow-y:auto;border-radius:1rem;">
+                            <table class="table table-hover align-middle">
+                                <thead style="background:linear-gradient(135deg,#ff8c42,#ffa726);color:#fff;position:sticky;top:0;">
+                                    <tr>
+                                        <th><i class="bi bi-calendar3 me-1"></i>Tgl Bayar</th>
+                                        <th><i class="bi bi-hash me-1"></i>ID Transaksi</th>
+                                        <th><i class="bi bi-link-45deg me-1"></i>Ref Booking</th>
+                                        <th><i class="bi bi-layers me-1"></i>Tahap</th>
+                                        <th><i class="bi bi-cash-coin me-1"></i>Nominal</th>
+                                        <th><i class="bi bi-eye me-1"></i>Detail</th>
+                                        <th><i class="bi bi-gear me-1"></i>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody_pembayaran">
+                                    <tr>
+                                        <td colspan="8" class="text-center py-5">
+                                            <i class="bi bi-inbox" style="font-size:3rem;color:#ffa726;opacity:0.6;"></i>
+                                            <div class="mt-2" style="color:#ff8c42;font-weight:500;">Belum ada data pembayaran</div>
+                                            <small style="color:#ffa726;">Klik Refresh Data untuk memuat</small>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <style>
+        .status-surveying  { background-color: #E0F2FE; color: #0284C7; border:none; }
+        .status-booking    { background-color: #FEF9C3; color: #CA8A04; border:none; }
+        .status-soft       { background-color: #F3E8FF; color: #9333EA; border:none; }
+        .status-contract   { background-color: #FFEDD5; color: #EA580C; border:none; }
+        .status-confirmed  { background-color: #DBEAFE; color: #1D4ED8; border:none; }
+        .status-lunas      { background-color: #DCFCE7; color: #15803D; border:none; }
+        .status-selesai    { background-color: #CCFBF1; color: #0F766E; border:none; }
+        .status-batal      { background-color: #FEE2E2; color: #B91C1C; border:none; }
+        .soft-input {
+            background: #fff7f0;
+            border-radius: 1.1rem;
+            border: 1.5px solid #ffe0b2;
+            font-size: 1.05rem;
+            color: #b05a00;
+            transition: border 0.2s;
+        }
+        .soft-input:focus {
+            border: 2px solid #ffb74d;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(255,140,66,0.08);
+        }
+        select option[value=""] {
+            background-color: #ff8c42;
+            color: #fff;
+            font-weight: 600;
+        }
+        select option {
+            background-color: #fff7f0;
+            color: #b05a00;
+            font-weight: 500;
+        }
+        select option:hover,
+        select option:checked {
+            background-color: #ff8c42 !important;
+            color: #fff !important;
+        }
+        select.soft-input, select.form-select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23ff8c42' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.9rem center;
+            padding-right: 2.2rem !important;
+        }
+        .ref-booking-item:hover { background: #fff3e0; }
+        .fade-in-row {
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+            transform: translateY(15px);
+        }
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .table-hover tbody tr:hover {
+            background-color: rgba(255,140,66,0.05);
+        }
+        .kal-cell {
+            min-height: 80px;
+            border-radius: 0.7rem;
+            padding: 6px;
+            background: #fff;
+            border: 1.5px solid #ffe0b2;
+            cursor: default;
+            transition: all 0.15s;
+        }
+        .kal-cell:hover { background: #fff3e0; border-color: #ff8c42; }
+        .kal-cell.has-event { background: #fff8f3; border-color: #ff8c42; cursor: pointer; }
+        .kal-cell.has-event:hover { background: #ffe8d6; transform: scale(1.03); }
+        .kal-cell.today { border-color: #ffa726; background: #fff9e6; }
+        .kal-cell.empty { background: transparent; border-color: transparent; cursor: default; }
+        .kal-cell.empty:hover { background: transparent; transform: none; }
+        .kal-date { font-weight: 700; font-size: 0.9rem; color: #b05a00; }
+        .kal-cell.today .kal-date { background: #ff8c42; color: #fff; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .kal-event-dot { font-size: 0.72rem; background: linear-gradient(90deg,#ff8c42,#ffb74d); color: #fff; border-radius: 0.4rem; padding: 1px 5px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+        </style>
+    <footer style="margin-top: 3rem; padding: 1.5rem 2rem; background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 50%, #ffb74d 100%); text-align: center;">
+        <span style="color: rgba(255,255,255,0.85); font-size: 0.95rem; font-family: 'Segoe UI', sans-serif;">
+            Made with &#9829; by <a href="https://aksizebua.my.id" target="_blank" style="color: #fff; font-weight: 700; text-decoration: none;">aksizebua.my.id</a>
+        </span>
+    </footer>
+
+<script>
+function bukaHalaman(nama) {
+    // Sembunyikan semua halaman
+    document.querySelectorAll('.halaman-konten').forEach(function(el) {
+        el.classList.remove('aktif');
+    });
+    // Nonaktifkan semua tombol nav
+    document.querySelectorAll('.event-nav-btn').forEach(function(el) {
+        el.classList.remove('active');
+    });
+    // Tampilkan halaman yang dipilih
+    var halaman = document.getElementById('halaman-' + nama);
+    if (halaman) halaman.classList.add('aktif');
+    // Aktifkan tombol nav yang dipilih
+    var btn = document.getElementById('btn-' + nama);
+    if (btn) btn.classList.add('active');
+    // Simpan tab aktif agar tetap sama setelah refresh
+    sessionStorage.setItem('ajmn_aktif_tab', nama);
+    // Muat data saat membuka halaman monitoring
+    if (nama === 'monitoring') loadDataPembayaran();
+    // Inisialisasi form pembayaran
+    if (nama === 'pembayaran') {
+        const idEl = document.getElementById('input-id-trans');
+        if (idEl && !idEl.value) idEl.value = generateIdTrans();
+        loadRefBookingDropdown();
+    }
+    // Muat kalender saat membuka halaman kalender
+    if (nama === 'kalender') loadKalenderEvent();
+    if (nama === 'monitoring-event') loadMonitoringBooking();
+}
+
+
+const supabaseUrl = 'https://cvjzkdzuuuutgbobiwju.supabase.co';
+const supabaseKey = 'sb_publishable_do3L5iqYASgCW0OowBaj3w__46lHRCX';
+const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+// ============================================================
+// KALENDER EVENT
+// ============================================================
+let kalenderTahun = new Date().getFullYear();
+let kalenderBulan = new Date().getMonth(); // 0-indexed
+let semuaEventKalender = [];
+
+async function loadKalenderEvent() {
+    document.getElementById('kalender-loading').classList.remove('d-none');
+    document.getElementById('kalender-grid').innerHTML = '';
+
+    const { data, error } = await supabaseClient
+        .from('booking_calendar_view')
+        .select('*');
+
+    document.getElementById('kalender-loading').classList.add('d-none');
+
+    if (error) {
+        console.error('Gagal memuat kalender:', error);
+        document.getElementById('kalender-grid').innerHTML =
+            `<div class="col-12 text-center text-danger py-4"><i class="bi bi-exclamation-triangle me-2"></i>Gagal memuat data: ${error.message}</div>`;
+        return;
+    }
+
+    semuaEventKalender = data || [];
+    renderKalender();
+}
+
+function renderKalender() {
+    const namaBulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    const judulBtn = document.getElementById('kalender-judul-bulan');
+    judulBtn.innerHTML = `${namaBulan[kalenderBulan]} ${kalenderTahun} <i class="bi bi-chevron-down ms-1" style="font-size:0.8rem;"></i>`;
+
+    const grid = document.getElementById('kalender-grid');
+    grid.innerHTML = '';
+
+    const hariPertama = new Date(kalenderTahun, kalenderBulan, 1).getDay();
+    const totalHari = new Date(kalenderTahun, kalenderBulan + 1, 0).getDate();
+    const today = new Date();
+
+    const eventPerTanggal = {};
+    semuaEventKalender.forEach(ev => {
+        const tgl = ev.tanggal_event ? ev.tanggal_event.slice(0, 10) : null;
+        if (!tgl) return;
+        const [y, m, d] = tgl.split('-').map(Number);
+        if (y === kalenderTahun && m === kalenderBulan + 1) {
+            if (!eventPerTanggal[d]) eventPerTanggal[d] = [];
+            eventPerTanggal[d].push(ev);
+        }
+    });
+
+    const totalCells = Math.ceil((hariPertama + totalHari) / 7) * 7;
+    let row = document.createElement('div');
+    row.className = 'row g-1 w-100 m-0';
+
+    for (let i = 0; i < totalCells; i++) {
+        const hari = i - hariPertama + 1;
+        const col = document.createElement('div');
+        col.className = 'col p-0';
+
+        if (hari < 1 || hari > totalHari) {
+            col.innerHTML = `<div class="kal-cell empty"></div>`;
+        } else {
+            const isToday = (today.getDate() === hari && today.getMonth() === kalenderBulan && today.getFullYear() === kalenderTahun);
+            const events = eventPerTanggal[hari] || [];
+            const hasEvent = events.length > 0;
+
+            let dotsHtml = events.slice(0, 2).map(ev =>
+                `<div class="kal-event-dot" title="${ev.nama_event || ''}">${ev.nama_event || ''}</div>`
+            ).join('');
+            if (events.length > 2) dotsHtml += `<div class="kal-event-dot" style="background:#ffb74d;">+${events.length - 2} lagi</div>`;
+
+            const tglStr = `${kalenderTahun}-${String(kalenderBulan+1).padStart(2,'0')}-${String(hari).padStart(2,'0')}`;
+            col.innerHTML = `
+                <div class="kal-cell ${hasEvent ? 'has-event' : ''} ${isToday ? 'today' : ''}"
+                     ${hasEvent ? `onclick="tampilEventHari('${tglStr}', ${hari})"` : ''}>
+                    <div class="kal-date">${hari}</div>
+                    ${dotsHtml}
+                </div>`;
+        }
+
+        row.appendChild(col);
+        if ((i + 1) % 7 === 0) {
+            grid.appendChild(row);
+            row = document.createElement('div');
+            row.className = 'row g-1 w-100 m-0';
+        }
+    }
+}
+
+function navigasiKalender(delta) {
+    kalenderBulan += delta;
+    if (kalenderBulan > 11) { kalenderBulan = 0; kalenderTahun++; }
+    if (kalenderBulan < 0)  { kalenderBulan = 11; kalenderTahun--; }
+    document.getElementById('kalender-event-list').classList.add('d-none');
+    renderKalender();
+}
+
+function tampilEventHari(tglStr, hari) {
+    const namaBulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    const events = semuaEventKalender.filter(ev => ev.tanggal_event && ev.tanggal_event.slice(0,10) === tglStr);
+
+    document.getElementById('kalender-tgl-terpilih').textContent = `${hari} ${namaBulan[kalenderBulan]} ${kalenderTahun}`;
+
+    const itemsEl = document.getElementById('kalender-event-items');
+    itemsEl.innerHTML = events.map(ev => `
+        <div class="d-flex align-items-start gap-3 p-3 mb-2 rounded" style="background:#fff3e0;border:1px solid #ffe0b2;">
+            <div style="background:linear-gradient(135deg,#ff8c42,#ffb74d);color:#fff;border-radius:0.5rem;padding:6px 10px;font-size:0.8rem;font-weight:700;white-space:nowrap;text-align:center;">
+                ${ev.jam_mulai ? ev.jam_mulai.slice(0,5) : '--:--'}<br>${ev.jam_selesai ? ev.jam_selesai.slice(0,5) : '--:--'}
+            </div>
+            <div class="flex-grow-1">
+                <div class="fw-bold" style="color:#ff6b35;">${ev.nama_event || '-'}</div>
+                <div class="small text-muted">${ev.jenis_event || ''} &nbsp;|&nbsp; PIC: ${ev.pic_penyewa || '-'} &nbsp;|&nbsp; ${ev.no_hp_pic || ''}</div>
+                <div class="mt-1"><span class="badge bg-secondary">${ev.status_alur || '-'}</span></div>
+            </div>
+        </div>`).join('');
+
+    document.getElementById('kalender-event-list').classList.remove('d-none');
+    document.getElementById('kalender-event-list').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ============================================================
+// MONITORING BOOKING EVENT
+// ============================================================
+let allMonitoringData = [];
+
+async function loadMonitoringBooking() {
+    const tbody = document.getElementById('tbody_monitoring_booking');
+    if (!tbody || !supabaseClient) return;
+    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-3"><div class="spinner-border spinner-border-sm text-warning"></div> <span style="color:#ff8c42;">Memuat...</span></td></tr>`;
+
+    const { data, error } = await supabaseClient
+        .from('BOOKING_EVENT')
+        .select('id_booking, nama_event, jenis_event, tanggal_event, pic_penyewa, no_hp_pic, status_alur')
+        .order('tanggal_event', { ascending: false });
+
+    if (error) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-3"><i class="bi bi-exclamation-triangle me-1"></i>${error.message}</td></tr>`;
+        return;
+    }
+    allMonitoringData = data || [];
+    populateFilterStatusMonitoring();
+    renderMonitoringBooking(allMonitoringData);
+}
+
+function populateFilterStatusMonitoring() {
+    const sel = document.getElementById('filterStatusMonitoring');
+    if (!sel) return;
+    const current = sel.value;
+    const unique = [...new Set(allMonitoringData.map(d => d.status_alur).filter(s => s))].sort();
+    sel.innerHTML = '<option value="">Semua Status Alur</option>';
+    unique.forEach(s => { sel.innerHTML += `<option value="${s}">${s}</option>`; });
+    sel.value = current;
+
+    const selPic = document.getElementById('filterPicMonitoring');
+    if (!selPic) return;
+    const currentPic = selPic.value;
+    const uniquePic = [...new Set(allMonitoringData.map(d => d.pic_penyewa).filter(p => p))].sort();
+    selPic.innerHTML = '<option value="">Semua PIC</option>';
+    uniquePic.forEach(p => { selPic.innerHTML += `<option value="${p}">${p}</option>`; });
+    selPic.value = currentPic;
+}
+
+function filterMonitoringBooking() {
+    const status = document.getElementById('filterStatusMonitoring')?.value;
+    const pic = document.getElementById('filterPicMonitoring')?.value;
+    let filtered = allMonitoringData;
+    if (status) filtered = filtered.filter(d => d.status_alur === status);
+    if (pic) filtered = filtered.filter(d => d.pic_penyewa === pic);
+    renderMonitoringBooking(filtered);
+}
+
+function clearFilterMonitoring() {
+    const s = document.getElementById('filterStatusMonitoring');
+    const p = document.getElementById('filterPicMonitoring');
+    if (s) s.value = '';
+    if (p) p.value = '';
+    filterMonitoringBooking();
+}
+
+function renderMonitoringBooking(data) {
+    const tbody = document.getElementById('tbody_monitoring_booking');
+    if (!data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4"><i class="bi bi-inbox" style="font-size:2rem;color:#ffa726;opacity:0.6;"></i><div style="color:#ff8c42;">Tidak ada data</div></td></tr>`;
+        return;
+    }
+    tbody.innerHTML = '';
+    data.forEach((item, i) => {
+        let statusBadge = '';
+        const s = (item.status_alur || '').toLowerCase();
+        let cls = 'bg-secondary';
+        if (s.includes('survey'))    cls = 'status-surveying';
+        else if (s.includes('booking form') || s === 'booking') cls = 'status-booking';
+        else if (s.includes('soft')) cls = 'status-soft';
+        else if (s.includes('contract')) cls = 'status-contract';
+        else if (s.includes('confirm')) cls = 'status-confirmed';
+        else if (s.includes('lunas')) cls = 'status-lunas';
+        else if (s.includes('selesai')) cls = 'status-selesai';
+        else if (s.includes('batal') || s.includes('cancel')) cls = 'status-batal';
+        statusBadge = `<span class="badge ${cls} fw-semibold px-2 py-1">${item.status_alur || '-'}</span>`;
+
+        const tr = document.createElement('tr');
+        tr.className = 'fade-in-row';
+        tr.style.animationDelay = `${i * 0.04}s`;
+        tr.innerHTML = `
+            <td><strong style="color:#ff6b35;">${item.nama_event || '-'}</strong></td>
+            <td><small>${item.jenis_event || '-'}</small></td>
+            <td><small>${item.tanggal_event || '-'}</small></td>
+            <td><small>${item.pic_penyewa || '-'}</small></td>
+            <td><small>${item.no_hp_pic || '-'}</small></td>
+            <td>${statusBadge}</td>
+            <td>
+                <button class="btn btn-outline-danger btn-sm rounded-pill" onclick="hapusBookingEvent('${item.id_booking}', this)">
+                    <i class="bi bi-trash3"></i>
+                </button>
+            </td>`;
+        tbody.appendChild(tr);
+    });
+}
+
+async function hapusBookingEvent(idBooking, btnEl) {
+    if (!confirm(`Yakin hapus booking "${idBooking}"?\nData pembayaran terkait juga akan ikut dihapus.\nTindakan ini tidak dapat dibatalkan.`)) return;
+    btnEl.disabled = true;
+    btnEl.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+    // Hapus dulu data pembayaran yang mereferensi booking ini
+    const { error: errBayar } = await supabaseClient
+        .from('PEMBAYARAN_EVENT')
+        .delete()
+        .eq('ref_booking', idBooking);
+    if (errBayar) {
+        alert('Gagal menghapus data pembayaran terkait: ' + errBayar.message);
+        btnEl.disabled = false;
+        btnEl.innerHTML = '<i class="bi bi-trash3"></i>';
+        return;
+    }
+
+    // Baru hapus booking-nya
+    const { error } = await supabaseClient.from('BOOKING_EVENT').delete().eq('id_booking', idBooking);
+    if (error) {
+        alert('Gagal menghapus booking: ' + error.message);
+        btnEl.disabled = false;
+        btnEl.innerHTML = '<i class="bi bi-trash3"></i>';
+        return;
+    }
+    allMonitoringData = allMonitoringData.filter(d => d.id_booking !== idBooking);
+    filterMonitoringBooking();
+    // Refresh kalender juga
+    if (typeof loadKalenderEvent === 'function') loadKalenderEvent();
+}
+
+let pickerTahunTemp = new Date().getFullYear();
+
+function togglePickerKalender() {
+    const picker = document.getElementById('kalender-picker');
+    pickerTahunTemp = kalenderTahun;
+    renderPickerGrid();
+    picker.classList.toggle('d-none');
+}
+
+function renderPickerGrid() {
+    const namaBulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    document.getElementById('picker-tahun').textContent = pickerTahunTemp;
+    const grid = document.getElementById('picker-bulan-grid');
+    grid.innerHTML = namaBulan.map((nm, i) => {
+        const isAktif = (i === kalenderBulan && pickerTahunTemp === kalenderTahun);
+        return `<div class="col-3">
+            <button class="btn btn-sm w-100 rounded-pill" style="${isAktif ? 'background:linear-gradient(90deg,#ff8c42,#ffb74d);color:#fff;font-weight:700;' : 'color:#b05a00;'}" onclick="pilihBulanPicker(${i})">
+                ${nm}
+            </button>
+        </div>`;
+    }).join('');
+}
+
+function navigasiPickerTahun(delta) {
+    pickerTahunTemp += delta;
+    renderPickerGrid();
+}
+
+function pilihBulanPicker(bulan) {
+    kalenderBulan = bulan;
+    kalenderTahun = pickerTahunTemp;
+    document.getElementById('kalender-picker').classList.add('d-none');
+    document.getElementById('kalender-event-list').classList.add('d-none');
+    renderKalender();
+}
+
+// Tutup picker jika klik di luar
+document.addEventListener('click', function(e) {
+    const picker = document.getElementById('kalender-picker');
+    const btn = document.getElementById('kalender-judul-bulan');
+    if (picker && !picker.contains(e.target) && btn && !btn.contains(e.target)) {
+        picker.classList.add('d-none');
+    }
+});
+// ============================================================
+function generateIdBooking() {
+    return Math.random().toString(16).slice(2, 10);
+}
+
+function tampilNamaFilePKS(input) {
+    const label = document.getElementById('pks-filename');
+    const zone = document.getElementById('pks-dropzone');
+    if (input.files && input.files[0]) {
+        label.textContent = input.files[0].name;
+        zone.style.background = '#fff3e0';
+        zone.style.borderColor = '#ff8c42';
+    }
+}
+
+function resetFormBooking() {
+    const form = document.getElementById('form-booking-event');
+    if (form) {
+        form.reset();
+        document.getElementById('id_booking_input').value = generateIdBooking();
+        document.getElementById('pks-filename').textContent = 'Belum ada file dipilih';
+        const zone = document.getElementById('pks-dropzone');
+        if (zone) { zone.style.background = '#fff9f5'; zone.style.borderColor = '#ffb74d'; }
+    }
+}
+
+// ============================================================
+// FORM PEMBAYARAN EVENT
+// ============================================================
+function generateIdTrans() {
+    return Math.random().toString(16).slice(2, 18);
+}
+
+function tampilNamaFileBukti(input) {
+    const label = document.getElementById('nama-file-bukti');
+    const zone = document.getElementById('dropzone-bukti');
+    if (input.files && input.files[0]) {
+        label.textContent = input.files[0].name;
+        zone.style.background = '#fff3e0';
+        zone.style.borderColor = '#ff8c42';
+    }
+}
+
+function resetFormPembayaran() {
+    const form = document.getElementById('form-pembayaran-event');
+    if (form) {
+        form.reset();
+        document.getElementById('input-id-trans').value = generateIdTrans();
+        document.getElementById('nama-file-bukti').textContent = 'JPG, PNG, atau PDF';
+        const zone = document.getElementById('dropzone-bukti');
+        if (zone) { zone.style.background = '#fffaf7'; zone.style.borderColor = '#ffb74d'; }
+        // Reset ref booking search
+        const searchEl = document.getElementById('input-ref-booking-search');
+        const valEl = document.getElementById('input-ref-booking-value');
+        if (searchEl) searchEl.value = '';
+        if (valEl) valEl.value = '';
+        hideRefBookingDropdown();
+    }
+}
+
+let allRefBookingData = [];
+
+async function loadRefBookingDropdown() {
+    if (!supabaseClient) return;
+    const searchEl = document.getElementById('input-ref-booking-search');
+    if (searchEl) searchEl.placeholder = 'Memuat daftar event...';
+    const { data, error } = await supabaseClient
+        .from('BOOKING_EVENT')
+        .select('id_booking, nama_event')
+        .order('nama_event', { ascending: true });
+    if (error || !data) {
+        if (searchEl) searchEl.placeholder = 'Gagal memuat data booking';
+        return;
+    }
+    allRefBookingData = data;
+    if (searchEl) searchEl.placeholder = 'Ketik ID atau nama event...';
+}
+
+function filterRefBookingDropdown(query) {
+    const list = document.getElementById('ref-booking-list');
+    const valEl = document.getElementById('input-ref-booking-value');
+    if (valEl) valEl.value = ''; // reset pilihan saat mengetik ulang
+
+    const q = query.toLowerCase().trim();
+    const filtered = q
+        ? allRefBookingData.filter(b =>
+            b.id_booking.toLowerCase().includes(q) ||
+            (b.nama_event || '').toLowerCase().includes(q))
+        : allRefBookingData;
+
+    renderRefBookingList(filtered);
+    list.classList.remove('d-none');
+}
+
+function showRefBookingDropdown() {
+    const q = document.getElementById('input-ref-booking-search')?.value || '';
+    filterRefBookingDropdown(q);
+}
+
+function renderRefBookingList(data) {
+    const list = document.getElementById('ref-booking-list');
+    if (!data.length) {
+        list.innerHTML = `<div class="px-3 py-2 text-muted small">Tidak ada event ditemukan</div>`;
+        return;
+    }
+    list.innerHTML = data.map(b => `
+        <div class="ref-booking-item px-3 py-2" style="cursor:pointer;font-size:0.93rem;border-bottom:1px solid #fff3e0;"
+            onmousedown="pilihRefBooking('${b.id_booking}', '${(b.nama_event || '').replace(/'/g, "\\'")}')">
+            <span style="color:#ff8c42;font-weight:700;">${b.id_booking}</span>
+            <span class="ms-2 text-dark">${b.nama_event || '-'}</span>
+        </div>`).join('');
+}
+
+function pilihRefBooking(id, nama) {
+    document.getElementById('input-ref-booking-search').value = `${id} – ${nama}`;
+    document.getElementById('input-ref-booking-value').value = id;
+    hideRefBookingDropdown();
+}
+
+function hideRefBookingDropdown() {
+    const list = document.getElementById('ref-booking-list');
+    if (list) list.classList.add('d-none');
+}
+
+// Tutup dropdown ref booking saat klik di luar
+document.addEventListener('click', function(e) {
+    const wrapper = document.getElementById('ref-booking-wrapper');
+    if (wrapper && !wrapper.contains(e.target)) hideRefBookingDropdown();
+});
+
+async function submitPembayaran(e) {
+    e.preventDefault();
+    const form = document.getElementById('form-pembayaran-event');
+    const btn = document.getElementById('btn-simpan-pembayaran');
+    const formData = new FormData(form);
+    const idTrans = document.getElementById('input-id-trans').value;
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
+
+    let buktUrl = null;
+    const fileBukti = document.getElementById('file-bukti').files[0];
+    if (fileBukti) {
+        const ext = fileBukti.name.split('.').pop();
+        const path = `bukti_pembayaran/${idTrans}.${ext}`;
+        const { data: upData, error: upErr } = await supabaseClient.storage
+            .from('bukti_transfer')
+            .upload(path, fileBukti, { upsert: true });
+        if (upErr) {
+            alert('Gagal upload bukti transfer: ' + upErr.message);
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-save me-2"></i>Simpan Pembayaran';
+            return;
+        }
+        const { data: urlData } = supabaseClient.storage.from('bukti_transfer').getPublicUrl(path);
+        buktUrl = urlData.publicUrl;
+    }
+
+    const payload = {
+        id_trans:      idTrans,
+        ref_booking:   formData.get('ref_booking'),
+        tahap:         formData.get('tahap'),
+        tanggal_bayar: formData.get('tanggal_bayar'),
+        nominal:       Number(formData.get('nominal')),
+        bukti_transfer: buktUrl,
+    };
+
+    const { error } = await supabaseClient.from('PEMBAYARAN_EVENT').insert([payload]);
+    if (error) {
+        alert('Gagal menyimpan pembayaran: ' + error.message);
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-save me-2"></i>Simpan Pembayaran';
+        return;
+    }
+
+    btn.innerHTML = '<i class="bi bi-check-circle me-2"></i>Tersimpan!';
+    setTimeout(() => {
+        resetFormPembayaran();
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-save me-2"></i>Simpan Pembayaran';
+    }, 1500);
+}
+// ============================================================
+
+let allPembayaranData = [];
+
+async function loadDataPembayaran() {
+    const tbody = document.getElementById('tbody_pembayaran');
+    if (!tbody || !supabaseClient) return;
+
+    // Loading spinner
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="7" class="text-center py-4">
+                <div class="spinner-border text-warning" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="mt-2" style="color:#ff8c42;font-weight:500;">Memuat data pembayaran...</div>
+            </td>
+        </tr>`;
+
+    const { data, error } = await supabaseClient
+        .from('PEMBAYARAN_EVENT')
+        .select('*')
+        .order('tanggal_bayar', { ascending: false });
+
+    if (error) {
+        console.error('Error mengambil data pembayaran:', error);
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center py-4 text-danger">
+                    <i class="bi bi-exclamation-triangle mb-2" style="font-size:2rem;"></i><br>
+                    <strong>Gagal memuat data</strong><br>
+                    <small>${error.message}</small>
+                </td>
+            </tr>`;
+        return;
+    }
+
+    allPembayaranData = data || [];
+    populateFilterTahap();
+    renderTabelPembayaran(allPembayaranData);
+}
+
+function renderTabelPembayaran(data) {
+    const tbody = document.getElementById('tbody_pembayaran');
+    tbody.innerHTML = '';
+
+    if (!data || data.length === 0) {
+        const isFiltered = document.getElementById('filterTahap')?.value;
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center py-5">
+                    <i class="bi bi-${isFiltered ? 'funnel' : 'inbox'}" style="font-size:3rem;color:#ffa726;opacity:0.6;"></i>
+                    <div class="mt-2" style="color:#ff8c42;font-weight:500;">
+                        ${isFiltered ? 'Tidak ada data untuk tahap yang dipilih' : 'Belum ada data pembayaran'}
+                    </div>
+                    <small style="color:#ffa726;">${isFiltered ? 'Coba pilih tahap lain atau clear filter' : 'Klik Refresh Data untuk memuat'}</small>
+                </td>
+            </tr>`;
+        return;
+    }
+
+    data.forEach((item, index) => {
+        const formatRupiah = new Intl.NumberFormat('id-ID', {
+            style: 'currency', currency: 'IDR', minimumFractionDigits: 0
+        }).format(item.nominal || 0);
+
+        const tahap = item.tahap || '-';
+        let tahapBadge;
+        if (tahap.toLowerCase().includes('lunas')) {
+            tahapBadge = `<span class="badge bg-success">${tahap}</span>`;
+        } else if (tahap.toLowerCase().includes('dp') || tahap.toLowerCase().includes('50')) {
+            tahapBadge = `<span class="badge bg-warning text-dark">${tahap}</span>`;
+        } else if (tahap === '-' || !item.tahap) {
+            tahapBadge = `<span class="badge bg-secondary">-</span>`;
+        } else {
+            tahapBadge = `<span class="badge bg-info text-dark">${tahap}</span>`;
+        }
+
+        const tr = document.createElement('tr');
+        tr.className = 'fade-in-row';
+        tr.style.animationDelay = `${index * 0.05}s`;
+        tr.innerHTML = `
+            <td>${item.tanggal_bayar || '-'}</td>
+            <td><strong style="color:#ff8c42;">${item.id_trans || '-'}</strong></td>
+            <td>${item.ref_booking || '-'}</td>
+            <td>${tahapBadge}</td>
+            <td><strong>${formatRupiah}</strong></td>
+            <td>
+                <button class="btn btn-outline-warning btn-sm rounded-pill" onclick="lihatDetailPembayaran('${item.id_trans}')">
+                    <i class="bi bi-eye me-1"></i>Detail
+                </button>
+            </td>
+            <td>
+                <button class="btn btn-outline-danger btn-sm rounded-pill" onclick="hapusPembayaran('${item.id_trans}', this)">
+                    <i class="bi bi-trash3"></i>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+async function hapusPembayaran(idTrans, btnEl) {
+    if (!confirm(`Yakin hapus data pembayaran "${idTrans}"?\nTindakan ini tidak dapat dibatalkan.`)) return;
+    btnEl.disabled = true;
+    btnEl.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+    const { error } = await supabaseClient.from('PEMBAYARAN_EVENT').delete().eq('id_trans', idTrans);
+    if (error) {
+        alert('Gagal menghapus: ' + error.message);
+        btnEl.disabled = false;
+        btnEl.innerHTML = '<i class="bi bi-trash3"></i>';
+        return;
+    }
+    allPembayaranData = allPembayaranData.filter(d => d.id_trans !== idTrans);
+    filterPembayaran();
+}
+
+function lihatDetailPembayaran(idTrans) {
+    const item = allPembayaranData.find(d => String(d.id_trans) === String(idTrans));
+    if (!item) return;
+
+    const formatRupiah = (val) => `Rp ${(val || 0).toLocaleString('id-ID')}`;
+    const formatDate = (d) => {
+        try { return new Date(d).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); }
+        catch { return d || 'N/A'; }
+    };
+
+    const tahap = item.tahap || '-';
+    let tahapBadge;
+    if (tahap.toLowerCase().includes('lunas')) {
+        tahapBadge = `<span class="badge bg-success fs-6 px-3 py-2"><i class="bi bi-check-circle me-1"></i>${tahap}</span>`;
+    } else if (tahap.toLowerCase().includes('dp') || tahap.toLowerCase().includes('50')) {
+        tahapBadge = `<span class="badge bg-warning text-dark fs-6 px-3 py-2"><i class="bi bi-clock me-1"></i>${tahap}</span>`;
+    } else {
+        tahapBadge = `<span class="badge bg-secondary fs-6 px-3 py-2">${tahap}</span>`;
+    }
+
+    const buktiBagian = item.bukti_transfer ? `
+        <div class="image-preview mb-3" style="max-width:100%;height:200px;overflow:hidden;border-radius:0.5rem;border:2px solid #ddd;">
+            <img src="${item.bukti_transfer}" alt="Bukti Transfer" class="img-fluid w-100 h-100" style="object-fit:cover;cursor:pointer;"
+                 onclick="bukaGambarPembayaran('${item.bukti_transfer}')"
+                 onerror="this.style.display='none';">
+        </div>
+        <div class="d-flex gap-2 justify-content-center">
+            <button class="btn btn-outline-primary btn-sm" onclick="bukaGambarPembayaran('${item.bukti_transfer}')">
+                <i class="bi bi-zoom-in me-2"></i>Lihat Ukuran Penuh
+            </button>
+            <a href="${item.bukti_transfer}" target="_blank" class="btn btn-outline-success btn-sm">
+                <i class="bi bi-download me-2"></i>Download
+            </a>
+        </div>` :
+        `<div class="text-muted text-center p-4"><i class="bi bi-image" style="font-size:2rem;opacity:0.5;"></i><br><small>Belum ada bukti transfer</small></div>`;
+
+    const modalHtml = `
+        <div class="modal fade" id="modalDetailPembayaranEvent" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content" style="border:none;border-radius:1rem;box-shadow:0 20px 40px rgba(255,140,66,0.2);">
+                    <div class="modal-header" style="background:linear-gradient(135deg,#ff8c42,#ffa726);color:#fff;border-radius:1rem 1rem 0 0;">
+                        <h5 class="modal-title fw-bold"><i class="bi bi-receipt me-2"></i>Detail Pembayaran</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="card h-100" style="border:2px solid rgba(255,140,66,0.2);border-radius:0.8rem;">
+                                    <div class="card-body">
+                                        <h6 class="fw-bold mb-3" style="color:#ff8c42;"><i class="bi bi-info-circle me-2"></i>Informasi Pembayaran</h6>
+                                        <div class="mb-3"><label class="fw-bold text-muted mb-1">ID Transaksi:</label><div>#${item.id_trans || 'N/A'}</div></div>
+                                        <div class="mb-3"><label class="fw-bold text-muted mb-1">Nama Event:</label><div class="fs-6 fw-bold" style="color:#ff8c42;">${item.nama_event || 'N/A'}</div></div>
+                                        <div class="mb-3"><label class="fw-bold text-muted mb-1">Tanggal Event:</label><div>${item.tanggal_event || 'N/A'}</div></div>
+                                        <div class="mb-3"><label class="fw-bold text-muted mb-1">PIC Penyewa:</label><div>${item.pic_penyewa || 'N/A'}</div></div>
+                                        <div class="mb-3"><label class="fw-bold text-muted mb-1">Tanggal Bayar:</label><div>${formatDate(item.tanggal_bayar)}</div></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card h-100" style="border:2px solid rgba(255,140,66,0.2);border-radius:0.8rem;">
+                                    <div class="card-body">
+                                        <h6 class="fw-bold mb-3" style="color:#ff8c42;"><i class="bi bi-cash-coin me-2"></i>Detail Nominal</h6>
+                                        <div class="mb-3"><label class="fw-bold text-muted mb-1">Nominal Pembayaran:</label><div class="fs-4 fw-bold text-danger">${formatRupiah(item.nominal)}</div></div>
+                                        <div class="mb-3"><label class="fw-bold text-muted mb-1">Tahap Pembayaran:</label><div>${tahapBadge}</div></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="card" style="border:2px solid rgba(255,140,66,0.2);border-radius:0.8rem;">
+                                    <div class="card-body">
+                                        <h6 class="fw-bold mb-3" style="color:#ff8c42;"><i class="bi bi-file-text me-2"></i>Bukti Transfer</h6>
+                                        <div class="text-center p-3 bg-light rounded">${buktiBagian}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="border-top:2px solid rgba(255,140,66,0.1);">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle me-2"></i>Tutup
+                        </button>
+                        <button type="button" class="btn" style="background:linear-gradient(135deg,#ff6b35,#ffb74d);color:#fff;border:none;" onclick="printDetailPembayaranEvent()">
+                            <i class="bi bi-printer me-2"></i>Print Detail
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+    const existing = document.getElementById('modalDetailPembayaranEvent');
+    if (existing) existing.remove();
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    window.currentDetailPembayaran = item;
+    new bootstrap.Modal(document.getElementById('modalDetailPembayaranEvent')).show();
+}
+
+function bukaGambarPembayaran(url) {
+    const html = `
+        <div class="modal fade" id="modalGambarPembayaran" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
+                <div class="modal-content" style="background:transparent;border:none;">
+                    <div class="modal-header" style="background:rgba(0,0,0,0.8);color:#fff;border:none;">
+                        <h5 class="modal-title"><i class="bi bi-image me-2"></i>Bukti Transfer</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body text-center p-0" style="background:rgba(0,0,0,0.9);">
+                        <img src="${url}" alt="Bukti Transfer" class="img-fluid" style="max-height:80vh;object-fit:contain;">
+                    </div>
+                    <div class="modal-footer" style="background:rgba(0,0,0,0.8);border:none;">
+                        <a href="${url}" target="_blank" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-up-right me-1"></i>Buka di Tab Baru</a>
+                        <a href="${url}" download class="btn btn-success btn-sm"><i class="bi bi-download me-1"></i>Download</a>
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"><i class="bi bi-x-circle me-1"></i>Tutup</button>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    const ex = document.getElementById('modalGambarPembayaran');
+    if (ex) ex.remove();
+    document.body.insertAdjacentHTML('beforeend', html);
+    new bootstrap.Modal(document.getElementById('modalGambarPembayaran')).show();
+}
+
+function printDetailPembayaranEvent() {
+    const item = window.currentDetailPembayaran;
+    if (!item) return;
+    const win = window.open('', '_blank');
+    win.document.write(`<html><head><title>Detail Pembayaran Event</title>
+    <style>body{font-family:Arial,sans-serif;padding:20px;}.header{text-align:center;border-bottom:2px solid #ff8c42;margin-bottom:20px;}.section{padding:15px;border:1px solid #ddd;margin-bottom:15px;}.label{font-weight:bold;width:160px;display:inline-block;}</style>
+    </head><body>
+    <div class="header"><h2>EVENT Non-AV AJMN</h2><h3>Detail Pembayaran</h3></div>
+    <div class="section"><h4>Informasi Pembayaran</h4>
+    <div><span class="label">ID Transaksi:</span>#${item.id_trans || 'N/A'}</div>
+    <div><span class="label">Referensi Booking:</span>${item.ref_booking || 'N/A'}</div>
+    <div><span class="label">Tahap:</span>${item.tahap || 'N/A'}</div>
+    <div><span class="label">Nominal:</span>Rp ${(item.nominal || 0).toLocaleString('id-ID')}</div>
+    <div><span class="label">Tanggal Bayar:</span>${item.tanggal_bayar || 'N/A'}</div>
+    </div>
+    <div style="text-align:center;margin-top:30px;font-size:12px;color:#666;">Dicetak: ${new Date().toLocaleString('id-ID')}</div>
+    </body></html>`);
+    win.document.close();
+    win.print();
+    win.close();
+}
+
+function populateFilterTahap() {
+    const select = document.getElementById('filterTahap');
+    if (!select) return;
+    const current = select.value;
+    const uniqueTahap = [...new Set(allPembayaranData.map(d => d.tahap).filter(t => t))];
+    select.innerHTML = '<option value="">Semua Tahap</option>';
+    uniqueTahap.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t;
+        opt.textContent = t;
+        select.appendChild(opt);
+    });
+    select.value = current;
+}
+
+function filterPembayaran() {
+    const tahap = document.getElementById('filterTahap')?.value;
+    let filtered = allPembayaranData;
+    if (tahap) filtered = filtered.filter(d => d.tahap === tahap);
+    renderTabelPembayaran(filtered);
+    const info = document.getElementById('filterInfoPembayaran');
+    if (info) tahap ? info.classList.remove('d-none') : info.classList.add('d-none');
+}
+
+function clearFilterPembayaran() {
+    const select = document.getElementById('filterTahap');
+    if (select) select.value = '';
+    filterPembayaran();
+}
+
+// Panggil fungsi saat halaman selesai dimuat
+document.addEventListener('DOMContentLoaded', () => {
+    // Buka tab terakhir yang aktif, atau default ke booking
+    const tabTersimpan = sessionStorage.getItem('ajmn_aktif_tab') || 'booking';
+    bukaHalaman(tabTersimpan);
+
+    // Generate ID booking otomatis
+    const idInput = document.getElementById('id_booking_input');
+    if (idInput) idInput.value = generateIdBooking();
+
+    const formBooking = document.getElementById('form-booking-event');
+    if (formBooking) {
+        formBooking.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(formBooking);
+            const payload = {
+                id_booking:          document.getElementById('id_booking_input').value || undefined,
+                nama_event:          formData.get('nama_event'),
+                jenis_event:         formData.get('jenis_event'),
+                tanggal_event:       formData.get('tanggal_event'),
+                jam_mulai:           formData.get('jam_mulai'),
+                jam_selesai:         formData.get('jam_selesai'),
+                pic_penyewa:         formData.get('pic_penyewa'),
+                no_hp_pic:           formData.get('no_hp_pic'),
+                status_alur:         formData.get('status_alur') || null,
+                total_nilai_kontrak: parseFloat(formData.get('total_nilai_kontrak')),
+                dokumen_pks:         formData.get('dokumen_pks') || null,
+            };
+            Object.keys(payload).forEach(k => payload[k] === undefined && delete payload[k]);
+
+            const submitBtn = formBooking.querySelector('button[type="submit"]');
+            const origText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
+
+            // Upload PKS ke Supabase storage jika ada file
+            let dokumenPksUrl = null;
+            const fileInput = document.getElementById('dokumen_pks_file');
+            if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                const fileName = `pks_event/${payload.id_booking || Date.now()}_${file.name}`;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Upload PKS...';
+                const { data: uploadData, error: uploadError } = await supabaseClient.storage
+                    .from('bukti_transfer')
+                    .upload(fileName, file, { upsert: true });
+                if (uploadError) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = origText;
+                    alert('❌ Gagal upload dokumen PKS: ' + uploadError.message);
+                    return;
+                }
+                const { data: urlData } = supabaseClient.storage
+                    .from('bukti_transfer')
+                    .getPublicUrl(fileName);
+                dokumenPksUrl = urlData.publicUrl;
+            }
+            if (dokumenPksUrl) payload.dokumen_pks = dokumenPksUrl;
+
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
+
+            const { data, error } = await supabaseClient
+                .from('BOOKING_EVENT')
+                .insert([payload]);
+
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = origText;
+
+            if (error) {
+                alert('❌ Gagal menyimpan: ' + error.message);
+                console.error(error);
+            } else {
+                alert('✅ Booking berhasil disimpan!');
+                resetFormBooking();
+            }
+        });
+    }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

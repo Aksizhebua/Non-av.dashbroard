@@ -1,0 +1,25 @@
+{
+  "name": "ajsquare-payment-system",
+  "version": "1.0.0",
+  "description": "AJSquare Payment Management System with Supabase integration",
+  "main": "app.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "serve": "node server.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.99.1"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2",
+    "http-server": "^14.1.1"
+  },
+  "keywords": [
+    "payment-system",
+    "supabase",
+    "dashboard"
+  ],
+  "author": "AJMN Team",
+  "license": "MIT"
+}
