@@ -8,7 +8,7 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 // Page configuration — detects which system is active
 const PAGE_CONFIG = (() => {
     const page = window.location.pathname.toLowerCase();
-    const isAtmacanteen = page.includes('kelola-atmacanteen.html');
+    const isAtmacanteen = page.includes('kelola-atmacanteen');
     return {
         isAtmacanteen,
         tablePembayaran: isAtmacanteen ? 'PEMBAYARAN AC' : 'PEMBAYARAN AJS',
